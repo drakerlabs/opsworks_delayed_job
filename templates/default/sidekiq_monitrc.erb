@@ -1,6 +1,7 @@
 <% @workers.each do |worker, options| %>
   <% (options[:process_count] || 1).times do |n| %>
   <% sidekiq_timeout = options[:sidekiq_timeout] %>
+  <% memory_limit_percent = options[:memory_limit_percent] %>
   <% identifier = "#{@application}-#{worker}#{n+1}" %>
   <% conf_file = "#{@deploy[:deploy_to]}/shared/config/sidekiq_#{worker}#{n+1}.yml" %>
   <% pid_file = "#{@deploy[:deploy_to]}/shared/pids/sidekiq_#{identifier}.pid" %>
@@ -11,6 +12,7 @@ check process sidekiq_<%= identifier %>
   start program = "/bin/su - <%= @deploy[:user] %> -c 'cd <%= @deploy[:current_path] %> && RAILS_ENV=<%= @deploy[:rails_env] %> bundle exec sidekiq -C <%= conf_file %> -t <%= sidekiq_timeout %> -r <%= @deploy[:current_path] %> -P  <%= pid_file %> <%= syslog %>'" with timeout 90 seconds
   stop  program = "/bin/su - <%= @deploy[:user] %> -c 'kill -s TERM `cat <%= pid_file %>`'" with timeout 90 seconds
   group sidekiq_<%= @application %>_group
+  if memory usage > <%= memory_limit_percent %>% for 5 cycles then restart
 
   <% end %>
 <% end %>
