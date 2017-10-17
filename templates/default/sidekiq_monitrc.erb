@@ -1,4 +1,6 @@
 <% @workers.each do |worker, options| %>
+  <% puts "DEBUG MONITRC #{worker.inspect}" %>
+  <% puts "DEBUG MONITRC #{options.inspect}" %>
   <% sidekiq_timeout = options[:sidekiq_timeout] %>
   <% memory_limit_mb = options[:memory_limit_mb] %>
   <% sidekiq_process_count = options[:sidekiq_process_count] %>

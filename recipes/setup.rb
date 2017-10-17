@@ -32,6 +32,8 @@ node[:deploy].each do |application, deploy|
     workers = node[:sidekiq][application].to_hash.reject {|k,v| k.to_s =~ /restart_command|syslog/ }
     config_directory = "#{deploy[:deploy_to]}/shared/config"
 
+    puts "DEBUG SETUP #{workers.inspect}"
+
     workers.each do |worker, options|
 
       # Convert attribute classes to plain old ruby objects
@@ -52,12 +54,11 @@ node[:deploy].each do |application, deploy|
       # indentation. (queues: to :queues:)
       yaml = yaml.gsub(/^(\s*)([^:][^\s]*):/,'\1:\2:')
 
-      (options[:process_count] || 1).times do |n|
-        file "#{config_directory}/sidekiq_#{worker}#{n+1}.yml" do
-          mode 0644
-          action :create
-          content yaml
-        end
+
+      file "#{config_directory}/sidekiq_swarm.yml" do
+        mode 0644
+        action :create
+        content yaml
       end
     end
 
