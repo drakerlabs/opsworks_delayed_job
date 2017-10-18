@@ -8,6 +8,6 @@
 check process sidekiq_swarm
   matching "sidekiqswarm, managing"
   start program = "/bin/su - <%= @deploy[:user] %> -c 'cd <%= @deploy[:current_path] %> && RAILS_ENV=<%= @deploy[:rails_env] %> SIDEKIQ_PRELOAD= MAXMEM_KB=<%= memory_limit_kb %> COUNT=<%= sidekiq_process_count %> bundle exec sidekiqswarm -C <%= conf_file %> -t <%= sidekiq_timeout %> -r <%= @deploy[:current_path] %> <%= syslog %>'" with timeout 90 seconds
-  stop  program = "/bin/su - <%= @deploy[:user] %> -c 'kill -s TERM `pgrep sidekiqswarm`'" with timeout 90 seconds
+  stop  program = "/bin/su - <%= @deploy[:user] %> -c 'kill -s TERM `pgrep -fx 'sidekiqswarm, managing <%= sidekiq_process_count %> processes'`'" with timeout 90 seconds
 
 <% end %>
