@@ -32,8 +32,6 @@ node[:deploy].each do |application, deploy|
     workers = node[:sidekiq][application].to_hash.reject {|k,v| k.to_s =~ /restart_command|syslog/ }
     config_directory = "#{deploy[:deploy_to]}/shared/config"
 
-    puts "DEBUG SETUP #{workers.inspect}"
-
     workers.each do |worker, options|
 
       # Convert attribute classes to plain old ruby objects
